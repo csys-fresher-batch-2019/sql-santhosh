@@ -1,0 +1,5 @@
+create table task(task varchar2(20) not null, 
+emp_name varchar2(20) not null,
+deadline date constraint chk check (deadline > sysdate),
+completed_on date constraint chk1 check (completed_on < sysdate));
+
