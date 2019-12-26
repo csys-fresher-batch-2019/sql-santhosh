@@ -1,0 +1,11 @@
+create table task(taskname varchar2(20) not null, 
+emp_name varchar2(20) not null,
+task_date date default sysdate,
+deadline date (deadline <=sysdate),
+completed_on date constraint chk1 check (completed_on < sysdate)
+status varchar2(23));
+
+
+
+
+insert into task (taskname ,emp_name ,deadline ,completed-on,status) values ('oracle','santhosh',26-12-2019,25-12-2019,completed);
