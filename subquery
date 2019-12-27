@@ -70,7 +70,7 @@ drop table order_items;
 create table order_items( order_item number not null primary key,
 order_id number not null,book_id number not null,
 quantity number not null, status varchar2(20) not null,
-constraint order_items_orders_fk foreign key(order_id) REFERENCES orders(order_id),
+constraint order_items_orders_fk foreign key(order_id) reference orders(order_id),
 constraint order_items_book_fk foreign key (book_id) references books(book_id)); 
 
 select * from books;
