@@ -7,7 +7,7 @@ version number,
 categories varchar2(50) not null,
 active number,
 constraint book_id_pk primary key (book_id),
-constraint book_ck check(price>=0),
+constraint book_price_ck check(price>=0),
 constraint book_uq unique(book_name,author_name,version)
 );
 select * from books;
