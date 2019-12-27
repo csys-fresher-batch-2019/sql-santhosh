@@ -131,3 +131,11 @@ select book_name,(select sum(quantity) from order_items where book_id = b.book_i
 select * from book_stock;
 
 select book_name,(select sum(quantity) from book_stock where book_id = b.book_id)from books b;
+select book_name,(select quantity from book_stock where book_id = b.book_id)from books b;
+
+select quantity from book_stock where book_id=1;
+
+
+select book_name,(select quantity from book_stock where book_id = b.book_id)- 
+(select sum(quantity) from order_items where book_id = b.book_id) from books b;
+ 
