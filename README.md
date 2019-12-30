@@ -5,7 +5,7 @@
 ### feature 1: list the course details
 
 
-
+```sql
 create table course_details(
     id number primary key,
     name VARCHAR2(25) not null,     
@@ -18,3 +18,4 @@ create table course_details(
     
     
     query: select * from course_details;
+```
