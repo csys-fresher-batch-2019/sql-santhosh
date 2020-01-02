@@ -71,7 +71,7 @@ select * from transaction_table;
 
 ### features 4:check the credit limit using procedure
 
- sql 
+ ```sql
 create or replace procedure prc_swipe(
     prc_accno in number,             
     prc_card_number in number,
@@ -103,7 +103,7 @@ declare
     DBMS_OUTPUT.PUT_LINE(status);
     end;
     /
-      
+ ```     
       
    ### features 5: update the credit limit into master_table using procedure
       
