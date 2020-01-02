@@ -1,5 +1,5 @@
-# Software Course Database
-* https://course_database.in
+# credit card transaction
+* https://canarabank.in
 ## features
 * view the master table
 ### feature 1: list the master_table details
