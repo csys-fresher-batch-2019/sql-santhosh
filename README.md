@@ -106,7 +106,8 @@ declare
  ```     
       
    ### features 5: update the credit limit into master_table using procedure
-      
+ 
+ ```sql     
  create or replace procedure prc_swipe(
     prc_accno in number,             
     prc_card_number in number,
@@ -125,6 +126,37 @@ declare
         status := 'sucess';
         commit;
         end prc_swipe;
-        
+   
+   
+   
+    run query:
     
-   ### features 5:
+    declare
+    prc_accno number(20) := 98765432101;      
+    prc_card_number number(20) := 4315810647561004;
+    prc_expdate date := '01-NOV-23';
+    prc_amt number(10) := 1200;
+    status varchar2(23); 
+    BEGIN
+    prc_swipe(prc_accno,prc_card_number,prc_expdate,prc_amt,status);
+    DBMS_OUTPUT.PUT_LINE(status);
+    end;
+    /
+   
+ ```  
+   
+    
+  ### features 5: triggers
+  
+  ```sql
+  
+  create or replace trigger bill_record after insert on transaction_table for each row 
+declare
+begin
+if(inserting) then
+if(:new.transaction_type)='credit_bill' then 
+update master_table set card_limit=(:new.transaction_amount + card_limit) where account_number=:new.account_number;
+end if;
+end if;
+end;
+```
