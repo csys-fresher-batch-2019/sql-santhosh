@@ -1,10 +1,10 @@
-# credit card transaction
+# Credit Card Transaction
 
 * https://canarabank.in
 
 ## features
-* view the master_credit
-### feature 1: list the master_credit details
+* view the master_table
+### feature 1: list the master_table details
 
 
 ```sql
