@@ -192,3 +192,13 @@ end if;
 end if;
 end;
 ```
+
+
+### features 6: increaseing the credit limits
+
+
+```sql
+
+update master_table set card_limit=25000,card_type=gold where account_number=98765432101 and card_number=4315810647561004;
+
+```
