@@ -71,15 +71,22 @@ create table trans_dtls(
     transaction_type varchar2(20) not null,
     transaction_amount number not null,
     constraint trans_amount_ck check(transaction_amount > 0),
-    transaction_date date not null);
+    transaction_date timestamp default sysdate);
 
 
-insert into trans_dtls(account_number,transaction_type,transaction_amount,transaction_date) values (98765432101,'credit_bill',1200,'01-dec-2019');
-insert into trans_dtls(account_number,transaction_type,transaction_amount,transaction_date) values (98765432564,'credit_bill',5000,'10-dec-2019');
-insert into trans_dtls(account_number,transaction_type,transaction_amount,transaction_date) values (98765432876,'credit_bill',500,'09-dec-2019');
+insert into trans_dtls(account_number,transaction_type,transaction_amount) values (98765432101,'credit_bill',1200);
+insert into trans_dtls(account_number,transaction_type,transaction_amount) values (98765432564,'credit_bill',5000);
 
 
 select * from trans_dtls;
+
++----------------+------------------+--------------------+---------------------------------+
+| account_number | transaction_type | transaction_amount | transaction_date                |
++----------------+------------------+--------------------+---------------------------------+
+| 98765432101    | credit_bill      | 1200               | 01-DEC-19 12.00.00.000000000 AM |
++----------------+------------------+--------------------+---------------------------------+
+| 98765432564    | credit_bill      | 5000               | 10-DEC-19 12.00.00.000000000 AM |
++----------------+------------------+--------------------+---------------------------------+
 ```
 
 
