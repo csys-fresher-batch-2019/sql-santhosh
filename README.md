@@ -33,7 +33,7 @@ select * from master_table;
 
 
 +--------------+---------------+-----------+------------+-----------+------------------+-----------------+
-| account_name | customer_name | card_exp  | card_limit | card_type | card_number      | saveing_account |
+|account_number| customer_name | card_exp  | card_limit | card_type | card_number      | saveing_account |
 +--------------+---------------+-----------+------------+-----------+------------------+-----------------+
 | 98765432101  | santhosh      | 01-NOV-23 | 20300      | platinum  | 4315810647561004 | 2000            |
 +--------------+---------------+-----------+------------+-----------+------------------+-----------------+
