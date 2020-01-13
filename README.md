@@ -12,7 +12,7 @@ create table master_table(
 
     account_number number not null, constraint master_acc_no_pk primary key(account_number), 
     customer_name varchar2(25) not null,
-    card_exp date not null,
+    card_expired date not null,
     card_limit number not null, constraint card_limit_ck check(card_limit > 0),
     card_type varchar2(15) not null,
     card_number number not null, constraint master_card_number_unique unique(card_number),
@@ -21,12 +21,12 @@ create table master_table(
 
 ---query
 
-insert into master_table(account_number,customer_name,card_exp,card_limit,card_type,card_number,saveing_amount) 
+insert into master_table(account_number,customer_name,card_expired,card_limit,card_type,card_number,saveing_amount) 
     values (98765432101,'santhosh','01-nov-23',20000,'platinum',4315810647561004,2000);
-insert into master_table(account_number,customer_name,card_exp,card_limit,card_type,card_number,saveing_amount)
+insert into master_table(account_number,customer_name,card_expired,card_limit,card_type,card_number,saveing_amount)
     values (98765432564,'sam','01-jan-24',25000,'gold',3315510647561894,1000);
-insert into master_table(account_number,customer_name,card_exp,card_limit,card_type,card_number,saveing_amount) 
-    values (98765432876,'bala','01-aug-23',35000,'silver',4515822647521004,1080);
+insert into master_table(account_number,customer_name,card_expired,card_limit,card_type,card_number,saveing_amount) 
+    values (98765432876,'bala','01-aug-23',35000,'silver',45158226475210890,1080);
 
 select * from master_table;
 
@@ -47,21 +47,21 @@ select * from master_table;
 ### feature 2: list the credit_card details
 
 ```sql
-create table credit_dtls(
+create table credit_details(
     credit_amount number(20),
     credit_date timestamp default sysdate,
     account_number number(20) not null,
-    constraint credit_table_account_no_fk foreign key(account_number) references master_detail(account_number),
+    constraint credit_table_account_no_fk foreign key(account_number) references master_table(account_number),
     card_number number(20) not null);
 
 
 
-insert into credit_dtls (credit_amount,account_number,card_number) values (1200,98765432101,4315810647561004);
-insert into credit_dtls (credit_amount,account_number,card_number) values (5000,98765432564,3315510647561894);
-insert into credit_dtls (credit_amount,account_number,card_number) values (4000,98765432876,4515822647521004);
+insert into credit_details (credit_amount,account_number,card_number) values (1200,98765432101,4315810647561004);
+insert into credit_details (credit_amount,account_number,card_number) values (5000,98765432564,3315510647561894);
+insert into credit_details (credit_amount,account_number,card_number) values (4000,98765432876,4515822647521004);
 
 
-select * from credit_dtls;
+select * from credit_details;
 
 +---------------+---------------------------------+----------------+------------------+
 | credit_amount | creadit_date                    | account_number | card_number      |
@@ -75,20 +75,20 @@ select * from credit_dtls;
 ```
 ### features 3: list the transaction details
 ```sql
-create table trans_dtls(
+create table transaction_details(
     account_number number(20)not null,
-    constraint trans_table_acc_no_fk foreign key(account_number) references master_detail(account_number),
+    constraint tran_table_acc_no_fk foreign key(account_number) references master_table(account_number),
     transaction_type varchar2(20) not null,
     transaction_amount number not null,
-    constraint trans_amount_ck check(transaction_amount > 0),
+    constraint tran_amount_ck check(transaction_amount > 0),
     transaction_date timestamp default sysdate);
 
 
-insert into trans_dtls(account_number,transaction_type,transaction_amount) values (98765432101,'credit_bill',1200);
-insert into trans_dtls(account_number,transaction_type,transaction_amount) values (98765432564,'credit_bill',5000);
+insert into transaction_details(account_number,transaction_type,transaction_amount) values (98765432101,'credit_bill',500);
+insert into transaction_details(account_number,transaction_type,transaction_amount) values (98765432101,'credit_bill',300);
 
 
-select * from trans_dtls;
+select * from transaction_details;
 
 +----------------+------------------+--------------------+---------------------------------+
 | account_number | transaction_type | transaction_amount | transaction_date                |
@@ -104,76 +104,73 @@ select * from trans_dtls;
 ### features 4:check the credit limit using procedure
 
  ```sql
-create or replace procedure prc_swipe(
-    prc_accno in number,             
+create or replace procedure prc_swipe_check(
+    prc_account in number,             
     prc_card_number in number,
-    prc_expdate in date,
-    prc_amt in number,
+    prc_expired_date in date,
+    prc_amount in number,
     status out varchar2) as
     v_check number;
     begin
-        select count(1) into v_check from master_table where account_number= prc_accno and card_number= prc_card_number and 
-        card_exp= prc_expdate and (card_limit - prc_amt)>=0;
+        select count(1) into v_check from master_table where account_number= prc_account and card_number= prc_card_number and card_expired= prc_expired_date and (card_limit - prc_amount)>=0;
+        if(v_check == 0) then
+        status := 'transaction declind';
+        return;
+        end if;
+        status := 'sucess';
+        commit;
+        end prc_swipe_check;
+
+
+declare
+    prc_account number(20) := 98765432101;      
+    prc_card_number number(20) := 4315810647561004;
+    prc_expired_date date := '01-NOV-23';
+    prc_amount number(10) := 1000;
+    status varchar2(23); 
+    BEGIN
+    prc_swipe(prc_account,prc_card_number,prc_expired_date,prc_amount,status);
+    DBMS_OUTPUT.PUT_LINE(status);
+    end; ```     
+      
+   ### features 5: update the credit limit into master_table using procedure
+ 
+ ```sql 
+ create or replace procedure prc_swipe(
+    prc_account in number,             
+    prc_card_number in number,
+    prc_expired_date in date,
+    prc_amount in number,
+    status out varchar2) as
+    v_check number;
+    begin
+              select count(1) into v_check from master_table where account_number= prc_account and card_number= prc_card_number and card_expired= prc_expired_date and (card_limit - prc_amount)>=0;
         if(v_check = 0) then
         status := 'transaction declined';
         return;
         end if;
-        status := 'sucess';
+        update master_table set card_limit=(card_limit - prc_amount) where account_number= prc_account and card_number= prc_card_number and card_expired= prc_expired_date and (card_limit - prc_amount)>=0;
+        insert into credit_details (credit_amount,account_number,card_number)values (prc_amount,prc_account,prc_card_number);
+        status := 'sucess ';
         commit;
         end prc_swipe;
         /
 
-
-declare
-    prc_accno number(20) := 98765432101;      
-    prc_card_number number(20) := 4315810647561004;
-    prc_expdate date := '01-NOV-23';
-    prc_amt number(10) := 1200;
-    status varchar2(23); 
-    BEGIN
-    prc_swipe(prc_accno,prc_card_number,prc_expdate,prc_amt,status);
-    DBMS_OUTPUT.PUT_LINE(status);
-    end;
-    /
- ```     
-      
-   ### features 5: update the credit limit into master_table using procedure
- 
- ```sql     
- create or replace procedure prc_swipe(
-    prc_accno in number,             
-    prc_card_number in number,
-    prc_expdate in date,
-    prc_amt in number,
-    status out varchar2) as
-    v_check number;
-    begin
-        select count(1) into v_check from master_table where account_number= prc_accno and card_number= prc_card_number and card_exp= prc_expdate and (card_limit - prc_amt)>=0;
-        if(v_check = 0) then
-        status := 'transaction declined';
-        return;
-        end if;
-        update master_table set card_limit=(card_limit - prc_amt) where account_number= prc_accno and card_number= prc_card_number and card_exp= prc_expdate and (card_limit - prc_amt)>=0;
-        insert into credit_dtls(credit_amount,account_number,card_number)values (prc_amt,prc_accno,prc_card_number);
-        status := 'sucess';
-        commit;
-        end prc_swipe;
    
    
    
     run query:
     
     declare
-    prc_accno number(20) := 98765432101;      
+    prc_account number(20) := 98765432101;      
     prc_card_number number(20) := 4315810647561004;
-    prc_expdate date := '01-NOV-23';
-    prc_amt number(10) := 1200;
+    prc_expired_date date := '01-NOV-23';
+    prc_amount number(10) := 1000;
     status varchar2(23); 
     BEGIN
-    prc_swipe(prc_accno,prc_card_number,prc_expdate,prc_amt,status);
+    prc_swipe(prc_account,prc_card_number,prc_expired_date,prc_amount,status);
     DBMS_OUTPUT.PUT_LINE(status);
     end;
-    /
    
  ```  
    
@@ -182,7 +179,7 @@ declare
   
   ```sql
   
-  create or replace trigger bill_record after insert on trans_dtls for each row 
+create or replace trigger bill_record after insert on transaction_details for each row 
 declare
 begin
 if(inserting) then
@@ -191,6 +188,7 @@ update master_table set card_limit=(:new.transaction_amount + card_limit) where 
 end if;
 end if;
 end;
+/
 ```
 
 
